@@ -7,6 +7,7 @@ ip_list = []
 
 #输入用户名密码连接
 def login():
+    global access_token
     user = input('[-] input : username :')
     passwd = getpass.getpass('[-] input : password :')
     data = {
@@ -18,6 +19,7 @@ def login():
         r = requests.post('https://api.zoomeye.org/user/login',data = data_encoded)
         r_decoded = r.json() # loads() 将 json 字符串转换成 python 对象        
         access_token = r_decoded['access_token']
+        # print(access_token)
     except Exception as e:
         print('[-] info : username or password is wrong, please try again ')
         exit()
@@ -37,22 +39,27 @@ def apiTest(restart,page):
     """
     进行 api 使用测试
     """
+    # 将 token 格式化并添加到 HTTP Header 中
     headers = {
         'Authorization' : 'JWT ' + access_token
     }
+    #print(headers)
     for page in range(1,page + 1):
         try:         
             r = requests.get(f'https://api.zoomeye.org/host/search?query="{restart}"&facet=app,os&page=' + str(page),headers = headers)
             r_decoded = r.json()
+            #print(r_decoded)
             for x in r_decoded['matches']:
                 print(x['ip']+":"+str(x['portinfo']['port']))
-                ip_list.append(x['ip']+":"+str(x['portinfo']['port'])) 
+                ip_list.append(x['ip']+":"+str(x['portinfo']['port']))
+            #print('[-] info : count ' + str(page * 10))
+ 			            
         except Exception as e:
             # 若搜索请求超过 API 允许的最大条目限制 或者 全部搜索结束，则终止请求
             print('[-] info : ' + str(e))
-
-
     print(f'[-] info : 记录了 {len(ip_list)} 条数据')
+
+
 def nonono():
 			print(
 '''
