@@ -1,9 +1,23 @@
 # coding: utf-8
 from urllib.parse import quote
 import os,requests,json,sys,getpass 
-
+import argparse
 access_token = ''
 ip_list = []
+
+def parse_args():
+    """
+    :return:进行参数的解析
+    """
+    description = "you should add those parameter"                   
+    parser = argparse.ArgumentParser(description=description)        
+                                                                    
+    help = "Please follow the rules"
+    parser.add_argument('-p',"--page",help = "Please enter pages",type = int)                  
+    parser.add_argument('-g',"--grammar",help = "Please enter zoomeye grammar",type = str)  
+    args = parser.parse_args()                                             
+    return args
+
 
 #输入用户名密码连接
 def login():
@@ -53,94 +67,11 @@ def apiTest(restart,page):
                 print(x['ip']+":"+str(x['portinfo']['port']))
                 ip_list.append(x['ip']+":"+str(x['portinfo']['port']))
             #print('[-] info : count ' + str(page * 10))
- 			            
+                        
         except Exception as e:
             # 若搜索请求超过 API 允许的最大条目限制 或者 全部搜索结束，则终止请求
             print('[-] info : ' + str(e))
     print(f'[-] info : 记录了 {len(ip_list)} 条数据')
-
-
-def nonono():
-			print(
-'''
-zoomeye.py [-h] -p num -l str 
-	-l 				搜索语法(仅支持单个限制)
-	-p 				页数(默认十页)
-	-h 				zoomeye语法帮助
-'''
-			)
-
-def help():
-	print(
-'''
-                                            主机设备搜索
-
-组件:
-	app: 组件名
-	ver: 组件版本                                        app:Apache
-端口:				
-	port: 端口号                                         port:3389
-操作系统:			
-	os: 操作系统	                                     os:linux
-服务:			
-	service:服务名称                                     service:webcam
-主机名:										
-	hostname: 分析结果中的“主机名”字段                 hostname:google.com
-位置:			
-	country: 国家或者地区代码			
-	city: 城市名称                                       country:US
-			
-IP 地址:			
-	ip: 搜索一个指定的 IP 地址                           ip: 8.8.8.8
-CIDR:			
-	IP 的 CIDR 网段。                                    cidr:8.8.8.8/24
-			
-			
-                                            Web应用搜索
-			
-
-
-网站:			
-	site:网站域名                                        site:google.com
-标题:			
-	title: 页面标题，在<title>                           title:Nginx
-关键词:			
-	keywords:<meta name="Keywords">定义的页面关键词      keywords:Nginx
-描述:
-	desc: <meta name="description">定义的页面说明。       desc:Nginx
-HTTP 头:
-	headers: HTTP 请求中的 Headers。                     headers:Server
-'''
-		)
-
-def start():
-	arg = sys.argv
-	if len(arg) == 2 and arg[1] == '-h' :
-		help()
-		exit()
-	elif len(arg) == 3 and arg[1] == '-l' :
-		if type(arg[2]) is str:
-			return arg[2],11
-	elif len(arg) == 5 and '-l' in arg and '-p' in arg:
-		xxx=0
-		for i in range(len(arg)):
-			#print(xxx)
-			if arg[i] == '-l':
-				if type(arg[i+1]) is str:
-					restart = arg[i+1]
-				else: 
-					xxx = 1
-			try:
-				if arg[i] == '-p' :
-					page = int(arg[i+1]) + 1
-			except: 
-				xxx=1
-		if xxx == 0:
-			return restart,page 
-	
-	nonono()
-	exit()
-
 
 
 
@@ -151,6 +82,5 @@ def main(restart,page):
     saveListToFile(f'.\\{restart}.txt',ip_list)
 
 if __name__ == '__main__':
-
-	restart,page = start()
-	main(restart,page)
+    args = parse_args()
+    main(args.grammar,args.page)
