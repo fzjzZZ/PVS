@@ -32,45 +32,40 @@ def parse_args():
     parser = argparse.ArgumentParser(description=description)        
                                                                     
     help = "Please follow the rules"
-    parser.add_argument('-p',"--page",help = "Please enter pages",type = int,default = 1)                  
     parser.add_argument('-g',"--grammar",help = "Please enter zoomeye grammar",type = str)  
+    parser.add_argument('-p',"--page",help = "Please enter pages",type = int,default = 1)                  
+    parser.add_argument('-f',"--first",help = "Please enter the start page. The default is 1",type = int,default = 1)  
     args = parser.parse_args()  
 
     if args.grammar:                                          
     	return args
     else:
-    	print("usage: fofa_pro.py [-h] [-p PAGE] [-g GRAMMAR]")
+    	print("usage: fofa_pro.py [-h] [-g GRAMMAR] [-p PAGE] [-f FIRST]")
     	exit()
 
-def Get_Data(grammar,page,client):
+def Get_Data(grammar,page,first,client):
 	res = []
 	print("[*] info: 小主稍安勿躁,正在收集中")
-	for i in range(1,page+1):
-		data = client.get_data(grammar,page,"host,ip")
+	for i in range(first,page+first):
+		data = client.get_data(grammar,i,"host,ip")
 		if data['error'] == True:
 			print(f'[*] error:{data["errmsg"]}')
 			print('[*] exit!')
 			if res:
 				save(res,grammar)
-		for i in data['results']:
-			if 'https' in i[0]:
-				res.append(i[0])
+		for j in data['results']:
+			if 'https' in j[0]:
+				res.append(j[0])
 			else:
-				res.append('http://' + i[0])
+				res.append('http://' + j[0])
 	save(res,grammar)
 
 def main():
 	args = parse_args()
 	client = check_user()
-	Get_Data(args.grammar,args.page,client)
-	
-	
-	
+	Get_Data(args.grammar,args.page,args.first,client)
 	
 
-main()
+if __name__ == '__main__':
+	main()
 
-
-"""
-{'mode': 'normal', 'error': None, 'query': '"通达"', 'page': 1, 'size': 161975, 'results': }
-"""

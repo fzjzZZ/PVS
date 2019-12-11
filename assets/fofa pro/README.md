@@ -28,7 +28,7 @@ python 3
 
 `python fofa_pro.py -h`
 
-![image-20191207192358239](C:\Users\95830\AppData\Roaming\Typora\typora-user-images\image-20191207192358239.png)
+![image-20191211185031631](C:\Users\95830\AppData\Roaming\Typora\typora-user-images\image-20191211185031631.png)
 
 默认页数为1页。
 
